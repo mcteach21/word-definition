@@ -2,6 +2,10 @@ from html.parser import HTMLParser
 import urllib.request as urllib2
 from termcolor import colored
 
+lstSources = []
+lstDefinitions = {}
+
+
 class DicoLinkParser(HTMLParser):
     sectionTag = 'div'
     sourceTag = 'h3'
@@ -11,12 +15,16 @@ class DicoLinkParser(HTMLParser):
     insideSource = False
     insideDefinition = False
 
-    lstSources = []
-    lstDefinitions = {}
     currentDefinitions = []
+
     num_source = 0
     menu_color_1 = 'red'
     menu_color_2 = 'green'
+
+    # def __init__(self):
+    #     print('body of the constructor')
+    #     # self.lstSources.clear()
+    #     # self.lstDefinitions.clear()
 
     @staticmethod
     def attrs_match(attrs, attr_name, attr_value):
@@ -55,18 +63,18 @@ class DicoLinkParser(HTMLParser):
     def handle_data(self, data):
         if self.insideSection:
             if self.insideSource:
-                self.lstSources.append(data)
+                lstSources.append(data)
                 # print('source : ', data)
 
         if self.insideDefinition:
             self.currentDefinitions.append(data)
-            self.lstDefinitions[self.num_source] = self.currentDefinitions
+            lstDefinitions[self.num_source] = self.currentDefinitions
             # print('définition : ', data)
 
     def print_result(self):
-        for i in range(0, len(self.lstSources)):
-            print(colored(self.lstSources[i], self.menu_color_1))
-            for definition in self.lstDefinitions.get(i + 1):
+        for i in range(0, len(lstSources)):
+            print(colored(lstSources[i], self.menu_color_1))
+            for definition in lstDefinitions.get(i + 1):
                 print('\t', colored(definition, self.menu_color_2))
                 # print('\t', definition)
 
@@ -74,19 +82,26 @@ class DicoLinkParser(HTMLParser):
         # print(self.lstDefinitions)
 
     def word_exist(self):
-        return len(self.lstDefinitions) > 0
+        return len(lstDefinitions) > 0
+
+
+def _init():
+    lstSources.clear()
+    lstDefinitions.clear()
 
 
 def dictionary_search(word):
-    parser = DicoLinkParser()
-    html_page = urllib2.urlopen('https://www.dicolink.com/mots/' + word)
-    html_content = str(html_page.read().decode('utf-8'))
-    # print(html_content)
-    parser.feed(html_content)
+    # _init()
+    # parser = DicoLinkParser()
+    # html_page = urllib2.urlopen('https://www.dicolink.com/mots/' + word)
+    # html_content = str(html_page.read().decode('utf-8'))
+    # # print(html_content)
+    # parser.feed(html_content)
 
+    parser = create_parser(word)
     if parser.word_exist():
         print('******************************************')
-        print(word.upper(), ' - definition(s) : ')
+        print(word.upper(), ' - Definition(s) : ')
         print('******************************************')
         parser.print_result()
         print('******************************************')
@@ -94,20 +109,32 @@ def dictionary_search(word):
         print(word, ' not found!')
 
 
+def create_parser(word):
+    _init()
+    _parser = DicoLinkParser()
+    html_page = urllib2.urlopen('https://www.dicolink.com/mots/' + word)
+    html_content = str(html_page.read().decode('utf-8'))
+    _parser.feed(html_content)
+    return _parser
+
+
 def word_exists(word):
     if word is None:
         return False
 
-    try:
-        parser = DicoLinkParser()
-        html_page = urllib2.urlopen('https://www.dicolink.com/mots/' + word)
-        html_content = str(html_page.read().decode('utf-8'))
-        parser.feed(html_content)
+    parser = create_parser(word)
+    return parser.word_exist()
 
-        return parser.word_exist()
-    except ValueError:
-        print('error: ' + ValueError)
-        return False
+    # try:
+    #     parser = DicoLinkParser()
+    #     html_page = urllib2.urlopen('https://www.dicolink.com/mots/' + word)
+    #     html_content = str(html_page.read().decode('utf-8'))
+    #     parser.feed(html_content)
+    #
+    #     return parser.word_exist()
+    # except ValueError:
+    #     print('error: ' + ValueError)
+    #     return False
 
 
 async def dictionary_exists_async(word):
@@ -117,7 +144,7 @@ async def dictionary_exists_async(word):
     parser.feed(html_content)
 
     # print('\t', word, ' ==>', parser.is_found())
-    return parser.is_found()
+    return parser.word_exist()
 
 
 if __name__ == '__main__':
