@@ -129,13 +129,13 @@ async def check_words(all_words=True):
 
 
 def show_time():
-    print('************************')
+    # print('************************')
     named_tuple = time.localtime()
     time_string = time.strftime("%H:%M:%S", named_tuple)  # %m/%d/%Y,
 
     print('******* Scrabble *******')
     print('*******', time_string, '*******')
-    print('************************')
+    # print('************************')
 
 
 def scrabble():
@@ -146,7 +146,7 @@ def scrabble():
         print('no letters! bye.')
     else:
 
-        print('****************************************')
+        # print('****************************************')
         print('**************** words.. ***************')
         start_ms = int(round(time.time() * 1000))
 
@@ -154,7 +154,7 @@ def scrabble():
 
         end_ms = int(round(time.time() * 1000))
         print('time elapsed : ', int(round((end_ms - start_ms) / 1000)), 's.')
-        print('****************************************')
+        # print('****************************************')
 
 
 if __name__ == '__main__':
