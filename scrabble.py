@@ -32,10 +32,17 @@ def clean_phrase(phrase):
     return cleaned.upper()
 
 
+def _init():
+    _letters.clear()
+    _dict.clear()
+
+
 def input_letters():
-    phrase = str(input('Saisir lettres : \r\n ==> '))
+    _init()
+    phrase = str(input('Saisir lettres : '))
     phrase = clean_phrase(phrase)
     nb_letters = len(phrase)
+
     if nb_letters > 0:
         print('letters : ', phrase, ' (', nb_letters, ')')
         for letter in phrase:
@@ -158,5 +165,5 @@ def scrabble():
 
 
 if __name__ == '__main__':
-   scrabble()
-   input("Appuyer sur ENTER pour quitter le programme.")
+    scrabble()
+    input("Appuyer sur ENTER pour quitter le programme.")

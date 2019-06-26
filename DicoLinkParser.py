@@ -1,6 +1,6 @@
 from html.parser import HTMLParser
 import urllib.request as urllib2
-
+from termcolor import colored
 
 class DicoLinkParser(HTMLParser):
     sectionTag = 'div'
@@ -15,6 +15,8 @@ class DicoLinkParser(HTMLParser):
     lstDefinitions = {}
     currentDefinitions = []
     num_source = 0
+    menu_color_1 = 'red'
+    menu_color_2 = 'green'
 
     @staticmethod
     def attrs_match(attrs, attr_name, attr_value):
@@ -33,12 +35,12 @@ class DicoLinkParser(HTMLParser):
         if self.insideSection:
             if tag == self.sourceTag and self.attrs_match(attrs, 'class', 'source'):
                 self.insideSource = True
-                self.lstSources = []
+                # self.lstSources = []
 
         if self.insideSection:
             if tag == self.definitionTag:  # and self.attrs_match(attrs, 'class', 'source'):
                 self.insideDefinition = True
-                self.lstDefinitions = {}
+                # self.lstDefinitions = {}
 
     def handle_endtag(self, tag):
         if tag == self.sectionTag:
@@ -63,9 +65,13 @@ class DicoLinkParser(HTMLParser):
 
     def print_result(self):
         for i in range(0, len(self.lstSources)):
-            print(self.lstSources[i])
+            print(colored(self.lstSources[i], self.menu_color_1))
             for definition in self.lstDefinitions.get(i + 1):
-                print('\t', definition)
+                print('\t', colored(definition, self.menu_color_2))
+                # print('\t', definition)
+
+        # print(self.lstSources)
+        # print(self.lstDefinitions)
 
     def word_exist(self):
         return len(self.lstDefinitions) > 0
@@ -77,9 +83,13 @@ def dictionary_search(word):
     html_content = str(html_page.read().decode('utf-8'))
     # print(html_content)
     parser.feed(html_content)
-    if parser.is_found():
-        print(word.upper())
+
+    if parser.word_exist():
+        print('******************************************')
+        print(word.upper(), ' - definition(s) : ')
+        print('******************************************')
         parser.print_result()
+        print('******************************************')
     else:
         print(word, ' not found!')
 
@@ -96,9 +106,8 @@ def word_exists(word):
 
         return parser.word_exist()
     except ValueError:
-        print('error: '+ValueError)
+        print('error: ' + ValueError)
         return False
-
 
 
 async def dictionary_exists_async(word):
@@ -112,4 +121,4 @@ async def dictionary_exists_async(word):
 
 
 if __name__ == '__main__':
-    dictionary_search('wu')
+    dictionary_search('xi')

@@ -3,6 +3,7 @@ import sys
 from termcolor import colored
 
 from scrabble import scrabble
+from DicoLinkParser import dictionary_search
 
 
 def main():
@@ -54,7 +55,8 @@ def bye():
 
 
 def word_definition():
-    print("definition..")
+    word = input("your word : ")
+    dictionary_search(word)
 
 
 def switch_function(arg):
